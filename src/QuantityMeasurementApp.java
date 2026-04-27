@@ -43,6 +43,24 @@ public class QuantityMeasurementApp {
             return new QuantityLength(converted, target);
         }
 
+        public QuantityLength add(QuantityLength other) {
+            if (other == null) {
+                throw new IllegalArgumentException();
+            }
+            double sumBase = this.toBaseUnit() + other.toBaseUnit();
+            double result = this.unit.fromFeet(sumBase);
+            return new QuantityLength(result, this.unit);
+        }
+
+        public static QuantityLength add(QuantityLength q1, QuantityLength q2, LengthUnit target) {
+            if (q1 == null || q2 == null || target == null) {
+                throw new IllegalArgumentException();
+            }
+            double sumBase = q1.toBaseUnit() + q2.toBaseUnit();
+            double result = target.fromFeet(sumBase);
+            return new QuantityLength(result, target);
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -70,29 +88,11 @@ public class QuantityMeasurementApp {
         return target.fromFeet(base);
     }
 
-    public static double demonstrateLengthConversion(double value, LengthUnit from, LengthUnit to) {
-        return convert(value, from, to);
-    }
-
-    public static QuantityLength demonstrateLengthConversion(QuantityLength q, LengthUnit to) {
-        return q.convertTo(to);
-    }
-
-    public static boolean demonstrateLengthEquality(QuantityLength q1, QuantityLength q2) {
-        return q1.equals(q2);
-    }
-
-    public static boolean demonstrateLengthComparison(double v1, LengthUnit u1, double v2, LengthUnit u2) {
-        QuantityLength q1 = new QuantityLength(v1, u1);
-        QuantityLength q2 = new QuantityLength(v2, u2);
-        return demonstrateLengthEquality(q1, q2);
-    }
-
     public static void main(String[] args) {
-        System.out.println(convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
-        System.out.println(convert(3.0, LengthUnit.YARD, LengthUnit.FEET));
-        System.out.println(convert(36.0, LengthUnit.INCH, LengthUnit.YARD));
-        System.out.println(convert(1.0, LengthUnit.CENTIMETER, LengthUnit.INCH));
-        System.out.println(convert(0.0, LengthUnit.FEET, LengthUnit.INCH));
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+
+        System.out.println(q1.add(q2));
+        System.out.println(QuantityLength.add(q1, q2, LengthUnit.FEET));
     }
 }
