@@ -6,18 +6,18 @@ public class QuantityMeasurementApp {
         YARD(3.0),
         CENTIMETER(0.393701 / 12.0);
 
-        private final double toFeetFactor;
+        private final double factor;
 
-        LengthUnit(double toFeetFactor) {
-            this.toFeetFactor = toFeetFactor;
+        LengthUnit(double factor) {
+            this.factor = factor;
         }
 
-        public double toFeet(double value) {
-            return value * toFeetFactor;
+        public double toBase(double value) {
+            return value * factor;
         }
 
-        public double fromFeet(double value) {
-            return value / toFeetFactor;
+        public double fromBase(double base) {
+            return base / factor;
         }
     }
 
@@ -33,41 +33,23 @@ public class QuantityMeasurementApp {
             this.unit = unit;
         }
 
-        public double toBaseUnit() {
-            return unit.toFeet(value);
+        public double toBase() {
+            return unit.toBase(value);
         }
 
         public QuantityLength convertTo(LengthUnit target) {
-            double base = toBaseUnit();
-            double converted = target.fromFeet(base);
-            return new QuantityLength(converted, target);
+            double base = toBase();
+            return new QuantityLength(target.fromBase(base), target);
         }
 
         public QuantityLength add(QuantityLength other) {
-            if (other == null) {
-                throw new IllegalArgumentException();
-            }
-            double sumBase = this.toBaseUnit() + other.toBaseUnit();
-            double result = this.unit.fromFeet(sumBase);
-            return new QuantityLength(result, this.unit);
+            double sum = this.toBase() + other.toBase();
+            return new QuantityLength(this.unit.fromBase(sum), this.unit);
         }
 
         public QuantityLength add(QuantityLength other, LengthUnit target) {
-            if (other == null || target == null) {
-                throw new IllegalArgumentException();
-            }
-            double sumBase = this.toBaseUnit() + other.toBaseUnit();
-            double result = target.fromFeet(sumBase);
-            return new QuantityLength(result, target);
-        }
-
-        public static QuantityLength add(QuantityLength q1, QuantityLength q2, LengthUnit target) {
-            if (q1 == null || q2 == null || target == null) {
-                throw new IllegalArgumentException();
-            }
-            double sumBase = q1.toBaseUnit() + q2.toBaseUnit();
-            double result = target.fromFeet(sumBase);
-            return new QuantityLength(result, target);
+            double sum = this.toBase() + other.toBase();
+            return new QuantityLength(target.fromBase(sum), target);
         }
 
         @Override
@@ -75,12 +57,12 @@ public class QuantityMeasurementApp {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
             QuantityLength other = (QuantityLength) obj;
-            return Double.compare(this.toBaseUnit(), other.toBaseUnit()) == 0;
+            return Double.compare(this.toBase(), other.toBase()) == 0;
         }
 
         @Override
         public int hashCode() {
-            return Double.hashCode(toBaseUnit());
+            return Double.hashCode(toBase());
         }
 
         @Override
@@ -90,11 +72,18 @@ public class QuantityMeasurementApp {
     }
 
     public static void main(String[] args) {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
 
-        System.out.println(q1.add(q2, LengthUnit.FEET));
-        System.out.println(q1.add(q2, LengthUnit.INCH));
-        System.out.println(q1.add(q2, LengthUnit.YARD));
+        QuantityLength f1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength i1 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength y1 = new QuantityLength(1.0, LengthUnit.YARD);
+        QuantityLength c1 = new QuantityLength(2.54, LengthUnit.CENTIMETER);
+
+        System.out.println(f1.equals(i1));
+        System.out.println(f1.convertTo(LengthUnit.INCH));
+        System.out.println(f1.add(i1));
+        System.out.println(f1.add(i1, LengthUnit.INCH));
+        System.out.println(f1.add(i1, LengthUnit.YARD));
+        System.out.println(y1.add(f1, LengthUnit.YARD));
+        System.out.println(c1.convertTo(LengthUnit.INCH));
     }
 }
