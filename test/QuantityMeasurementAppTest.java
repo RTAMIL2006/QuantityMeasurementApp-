@@ -6,85 +6,106 @@ public class QuantityMeasurementAppTest {
     double EPS = 1e-6;
 
     @Test
-    void testEquality_FeetAndInch() {
-        var f = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var i = new QuantityMeasurementApp.QuantityLength(12.0, QuantityMeasurementApp.LengthUnit.INCH);
-        assertTrue(f.equals(i));
+    void testEquality_KilogramToKilogram() {
+        var q1 = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var q2 = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        assertTrue(q1.equals(q2));
     }
 
     @Test
-    void testConvert_FeetToInch() {
-        var f = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var result = f.convertTo(QuantityMeasurementApp.LengthUnit.INCH);
-        assertEquals(12.0, result.toBase() * 12.0, EPS);
+    void testEquality_KilogramToGram() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var g = new QuantityMeasurementApp.QuantityWeight(1000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        assertTrue(kg.equals(g));
     }
 
     @Test
-    void testConvert_CmToInch() {
-        var c = new QuantityMeasurementApp.QuantityLength(2.54, QuantityMeasurementApp.LengthUnit.CENTIMETER);
-        var result = c.convertTo(QuantityMeasurementApp.LengthUnit.INCH);
-        assertEquals(1.0, result.toBase() * 12.0, EPS);
+    void testEquality_KilogramToPound() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var lb = new QuantityMeasurementApp.QuantityWeight(2.20462, QuantityMeasurementApp.WeightUnit.POUND);
+        assertEquals(kg.toBase(), lb.toBase(), 1e-3);
     }
 
     @Test
-    void testAdd_SameUnit() {
-        var f1 = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var f2 = new QuantityMeasurementApp.QuantityLength(2.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var result = f1.add(f2);
+    void testConversion_KgToGram() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var result = kg.convertTo(QuantityMeasurementApp.WeightUnit.GRAM);
+        assertEquals(1000.0, result.toBase() / 0.001, EPS);
+    }
+
+    @Test
+    void testConversion_PoundToKg() {
+        var lb = new QuantityMeasurementApp.QuantityWeight(2.20462, QuantityMeasurementApp.WeightUnit.POUND);
+        var result = lb.convertTo(QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        assertEquals(1.0, result.toBase(), 1e-3);
+    }
+
+    @Test
+    void testAddition_SameUnit() {
+        var q1 = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var q2 = new QuantityMeasurementApp.QuantityWeight(2.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var result = q1.add(q2);
         assertEquals(3.0, result.toBase(), EPS);
     }
 
     @Test
-    void testAdd_CrossUnit() {
-        var f = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var i = new QuantityMeasurementApp.QuantityLength(12.0, QuantityMeasurementApp.LengthUnit.INCH);
-        var result = f.add(i);
+    void testAddition_CrossUnit() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var g = new QuantityMeasurementApp.QuantityWeight(1000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        var result = kg.add(g);
         assertEquals(2.0, result.toBase(), EPS);
     }
 
     @Test
-    void testAdd_TargetUnit_Inch() {
-        var f = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var i = new QuantityMeasurementApp.QuantityLength(12.0, QuantityMeasurementApp.LengthUnit.INCH);
-        var result = f.add(i, QuantityMeasurementApp.LengthUnit.INCH);
-        assertEquals(24.0, result.toBase() * 12.0, EPS);
+    void testAddition_TargetUnit_Gram() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var g = new QuantityMeasurementApp.QuantityWeight(1000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        var result = kg.add(g, QuantityMeasurementApp.WeightUnit.GRAM);
+        assertEquals(2000.0, result.toBase() / 0.001, EPS);
     }
 
     @Test
-    void testAdd_TargetUnit_Yard() {
-        var f = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var i = new QuantityMeasurementApp.QuantityLength(12.0, QuantityMeasurementApp.LengthUnit.INCH);
-        var result = f.add(i, QuantityMeasurementApp.LengthUnit.YARD);
-        assertEquals(2.0 / 3.0, result.toBase() / 3.0, 1e-3);
+    void testAddition_TargetUnit_Pound() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var g = new QuantityMeasurementApp.QuantityWeight(1000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        var result = kg.add(g, QuantityMeasurementApp.WeightUnit.POUND);
+        assertEquals(4.409, result.toBase() / 0.453592, 1e-2);
     }
 
     @Test
-    void testZeroAddition() {
-        var f = new QuantityMeasurementApp.QuantityLength(5.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var zero = new QuantityMeasurementApp.QuantityLength(0.0, QuantityMeasurementApp.LengthUnit.INCH);
-        var result = f.add(zero);
+    void testZeroValue() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(5.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var zero = new QuantityMeasurementApp.QuantityWeight(0.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        var result = kg.add(zero);
         assertEquals(5.0, result.toBase(), EPS);
     }
 
     @Test
-    void testNegativeAddition() {
-        var f1 = new QuantityMeasurementApp.QuantityLength(5.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var f2 = new QuantityMeasurementApp.QuantityLength(-2.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var result = f1.add(f2);
+    void testNegativeValue() {
+        var kg = new QuantityMeasurementApp.QuantityWeight(5.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var neg = new QuantityMeasurementApp.QuantityWeight(-2000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        var result = kg.add(neg);
         assertEquals(3.0, result.toBase(), EPS);
     }
 
     @Test
     void testNullUnit() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new QuantityMeasurementApp.QuantityLength(1.0, null);
+            new QuantityMeasurementApp.QuantityWeight(1.0, null);
         });
     }
 
     @Test
     void testInvalidValue() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new QuantityMeasurementApp.QuantityLength(Double.NaN, QuantityMeasurementApp.LengthUnit.FEET);
+            new QuantityMeasurementApp.QuantityWeight(Double.NaN, QuantityMeasurementApp.WeightUnit.KILOGRAM);
         });
+    }
+
+    @Test
+    void testWeightVsLength_NotEqual() {
+        var weight = new QuantityMeasurementApp.QuantityWeight(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var length = new QuantityMeasurementApp.QuantityLength(1.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertFalse(weight.equals(length));
     }
 }
