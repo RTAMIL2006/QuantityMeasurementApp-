@@ -1,106 +1,147 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class QuantityTest {
+class QuantityUC12Test {
 
-    private static final double EPSILON = 1e-6;
+    private static final double EPS = 1e-6;
 
     @Test
-    void testEquality_LitreToMillilitre() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> b = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
-        assertTrue(a.equals(b));
+    void testSubtraction_SameUnit_Length() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var r = a.subtract(b);
+        assertEquals(5.0, r.getValue(), EPS);
     }
 
     @Test
-    void testEquality_LitreToGallon() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> b = new Quantity<>(0.264172, VolumeUnit.GALLON);
-        assertTrue(a.equals(b));
+    void testSubtraction_CrossUnit_Length() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(6.0, QuantityMeasurementApp.LengthUnit.INCHES);
+        var r = a.subtract(b);
+        assertEquals(9.5, r.getValue(), EPS);
     }
 
     @Test
-    void testConversion_LitreToMillilitre() {
-        Quantity<VolumeUnit> q = new Quantity<>(1.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> result = q.convertTo(VolumeUnit.MILLILITRE);
-        assertEquals(1000.0, result.getValue(), EPSILON);
+    void testSubtraction_ExplicitTarget_Length() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(6.0, QuantityMeasurementApp.LengthUnit.INCHES);
+        var r = a.subtract(b, QuantityMeasurementApp.LengthUnit.INCHES);
+        assertEquals(114.0, r.getValue(), EPS);
     }
 
     @Test
-    void testConversion_GallonToLitre() {
-        Quantity<VolumeUnit> q = new Quantity<>(1.0, VolumeUnit.GALLON);
-        Quantity<VolumeUnit> result = q.convertTo(VolumeUnit.LITRE);
-        assertEquals(3.78541, result.getValue(), EPSILON);
+    void testSubtraction_NegativeResult() {
+        var a = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var r = a.subtract(b);
+        assertEquals(-5.0, r.getValue(), EPS);
     }
 
     @Test
-    void testAddition_LitrePlusMillilitre() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> b = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
-        Quantity<VolumeUnit> result = a.add(b);
-        assertEquals(2.0, result.getValue(), EPSILON);
+    void testSubtraction_ZeroResult() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(120.0, QuantityMeasurementApp.LengthUnit.INCHES);
+        var r = a.subtract(b);
+        assertEquals(0.0, r.getValue(), EPS);
     }
 
     @Test
-    void testAddition_WithTargetUnit() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> b = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
-        Quantity<VolumeUnit> result = a.add(b, VolumeUnit.MILLILITRE);
-        assertEquals(2000.0, result.getValue(), EPSILON);
+    void testSubtraction_Weight() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var b = new QuantityMeasurementApp.Quantity<>(5000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        var r = a.subtract(b);
+        assertEquals(5.0, r.getValue(), EPS);
     }
 
     @Test
-    void testAddition_GallonPlusLitre() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.GALLON);
-        Quantity<VolumeUnit> b = new Quantity<>(3.78541, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> result = a.add(b);
-        assertEquals(2.0, result.getValue(), EPSILON);
+    void testSubtraction_Volume() {
+        var a = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.VolumeUnit.LITRE);
+        var b = new QuantityMeasurementApp.Quantity<>(500.0, QuantityMeasurementApp.VolumeUnit.MILLILITRE);
+        var r = a.subtract(b);
+        assertEquals(4.5, r.getValue(), EPS);
     }
 
     @Test
-    void testZeroValue() {
-        Quantity<VolumeUnit> a = new Quantity<>(0.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> b = new Quantity<>(0.0, VolumeUnit.MILLILITRE);
-        assertTrue(a.equals(b));
+    void testSubtraction_NullOperand() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertThrows(IllegalArgumentException.class, () -> a.subtract(null));
     }
 
     @Test
-    void testNegativeValues() {
-        Quantity<VolumeUnit> a = new Quantity<>(-1.0, VolumeUnit.LITRE);
-        Quantity<VolumeUnit> b = new Quantity<>(-1000.0, VolumeUnit.MILLILITRE);
-        assertTrue(a.equals(b));
+    void testSubtraction_CrossCategory() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        assertThrows(IllegalArgumentException.class, () -> a.subtract((QuantityMeasurementApp.Quantity) b));
     }
 
     @Test
-    void testCrossCategory_NotEqual() {
-        Quantity<VolumeUnit> volume = new Quantity<>(1.0, VolumeUnit.LITRE);
-        Quantity<LengthUnit> length = new Quantity<>(1.0, LengthUnit.FEET);
-        assertFalse(volume.equals(length));
+    void testDivision_SameUnit_Length() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertEquals(5.0, a.divide(b), EPS);
     }
 
     @Test
-    void testSameReference() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
-        assertTrue(a.equals(a));
+    void testDivision_CrossUnit_Length() {
+        var a = new QuantityMeasurementApp.Quantity<>(24.0, QuantityMeasurementApp.LengthUnit.INCHES);
+        var b = new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertEquals(1.0, a.divide(b), EPS);
     }
 
     @Test
-    void testNullComparison() {
-        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
-        assertFalse(a.equals(null));
+    void testDivision_RatioLessThanOne() {
+        var a = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertEquals(0.5, a.divide(b), EPS);
     }
 
     @Test
-    void testInvalidUnit() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Quantity<>(1.0, null);
-        });
+    void testDivision_Weight() {
+        var a = new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var b = new QuantityMeasurementApp.Quantity<>(2000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+        assertEquals(1.0, a.divide(b), EPS);
     }
 
     @Test
-    void testNaNValue() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Quantity<>(Double.NaN, VolumeUnit.LITRE);
-        });
+    void testDivision_Volume() {
+        var a = new QuantityMeasurementApp.Quantity<>(1000.0, QuantityMeasurementApp.VolumeUnit.MILLILITRE);
+        var b = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.VolumeUnit.LITRE);
+        assertEquals(1.0, a.divide(b), EPS);
+    }
+
+    @Test
+    void testDivision_ByZero() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(0.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertThrows(ArithmeticException.class, () -> a.divide(b));
+    }
+
+    @Test
+    void testDivision_NullOperand() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        assertThrows(IllegalArgumentException.class, () -> a.divide(null));
+    }
+
+    @Test
+    void testDivision_CrossCategory() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        assertThrows(IllegalArgumentException.class, () -> a.divide((QuantityMeasurementApp.Quantity) b));
+    }
+
+    @Test
+    void testIntegration_AddSubtractInverse() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var b = new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var r = a.add(b).subtract(b);
+        assertEquals(a.getValue(), r.getValue(), EPS);
+    }
+
+    @Test
+    void testChainedSubtraction() {
+        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var r = a.subtract(new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET))
+                .subtract(new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET));
+        assertEquals(7.0, r.getValue(), EPS);
     }
 }
