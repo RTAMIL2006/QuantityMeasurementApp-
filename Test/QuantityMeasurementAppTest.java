@@ -1,175 +1,111 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class QuantityUC13Test {
+public class QuantityTest {
 
-    private static final double EPS = 1e-6;
-
-    // ---------- ADD (Behavior preserved) ----------
+    // ---------- LENGTH TESTS ----------
 
     @Test
-    void testAdd_BehaviorPreserved() {
-        var a = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(12.0, QuantityMeasurementApp.LengthUnit.INCHES);
+    void testLengthEquality_FeetToInches() {
+        QuantityMeasurementApp.Quantity<QuantityMeasurementApp.LengthUnit> q1 =
+                new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
 
-        var r = a.add(b);
-        assertEquals(2.0, r.getValue(), EPS);
-    }
+        QuantityMeasurementApp.Quantity<QuantityMeasurementApp.LengthUnit> q2 =
+                new QuantityMeasurementApp.Quantity<>(12.0, QuantityMeasurementApp.LengthUnit.INCHES);
 
-    // ---------- SUBTRACT ----------
-
-    @Test
-    void testSubtract_DelegationAndResult() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(6.0, QuantityMeasurementApp.LengthUnit.INCHES);
-
-        var r = a.subtract(b);
-        assertEquals(9.5, r.getValue(), EPS);
+        assertTrue(q1.equals(q2));
     }
 
     @Test
-    void testSubtract_ExplicitTargetUnit() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(6.0, QuantityMeasurementApp.LengthUnit.INCHES);
+    void testLengthConversion() {
+        QuantityMeasurementApp.Quantity<QuantityMeasurementApp.LengthUnit> q =
+                new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
 
-        var r = a.subtract(b, QuantityMeasurementApp.LengthUnit.INCHES);
-        assertEquals(114.0, r.getValue(), EPS);
-    }
+        QuantityMeasurementApp.Quantity<QuantityMeasurementApp.LengthUnit> result =
+                q.convertTo(QuantityMeasurementApp.LengthUnit.INCHES);
 
-    // ---------- DIVIDE ----------
-
-    @Test
-    void testDivide_DelegationAndResult() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET);
-
-        assertEquals(5.0, a.divide(b), EPS);
+        assertEquals(12.0, result.getValue());
     }
 
     @Test
-    void testDivide_CrossUnit() {
-        var a = new QuantityMeasurementApp.Quantity<>(24.0, QuantityMeasurementApp.LengthUnit.INCHES);
-        var b = new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET);
+    void testLengthAddition() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var q2 = new QuantityMeasurementApp.Quantity<>(12.0, QuantityMeasurementApp.LengthUnit.INCHES);
 
-        assertEquals(1.0, a.divide(b), EPS);
+        var result = q1.add(q2, QuantityMeasurementApp.LengthUnit.FEET);
+
+        assertEquals(2.0, result.getValue());
     }
 
-    // ---------- VALIDATION (Centralized) ----------
+    // ---------- WEIGHT TESTS ----------
 
     @Test
-    void testValidation_NullOperand_AllOperations() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+    void testWeightEquality_KgToGram() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var q2 = new QuantityMeasurementApp.Quantity<>(1000.0, QuantityMeasurementApp.WeightUnit.GRAM);
 
-        assertThrows(IllegalArgumentException.class, () -> a.add(null));
-        assertThrows(IllegalArgumentException.class, () -> a.subtract(null));
-        assertThrows(IllegalArgumentException.class, () -> a.divide(null));
-    }
-
-    @Test
-    void testValidation_CrossCategory_AllOperations() {
-        var length = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var weight = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
-
-        assertThrows(IllegalArgumentException.class, () -> length.add((QuantityMeasurementApp.Quantity) weight));
-        assertThrows(IllegalArgumentException.class, () -> length.subtract((QuantityMeasurementApp.Quantity) weight));
-        assertThrows(IllegalArgumentException.class, () -> length.divide((QuantityMeasurementApp.Quantity) weight));
+        assertTrue(q1.equals(q2));
     }
 
     @Test
-    void testValidation_NullTargetUnit() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.LengthUnit.FEET);
+    void testWeightConversion() {
+        var q = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
 
-        assertThrows(IllegalArgumentException.class, () -> a.add(b, null));
-        assertThrows(IllegalArgumentException.class, () -> a.subtract(b, null));
-    }
+        var result = q.convertTo(QuantityMeasurementApp.WeightUnit.GRAM);
 
-    // ---------- ENUM OPERATION TEST ----------
-
-    @Test
-    void testArithmeticEnum_ADD() {
-        double result = QuantityMeasurementApp.ArithmeticOperation.ADD.compute(10, 5);
-        assertEquals(15.0, result, EPS);
+        assertEquals(1000.0, result.getValue());
     }
 
     @Test
-    void testArithmeticEnum_SUBTRACT() {
-        double result = QuantityMeasurementApp.ArithmeticOperation.SUBTRACT.compute(10, 5);
-        assertEquals(5.0, result, EPS);
+    void testWeightAddition() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+        var q2 = new QuantityMeasurementApp.Quantity<>(1000.0, QuantityMeasurementApp.WeightUnit.GRAM);
+
+        var result = q1.add(q2, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+
+        assertEquals(2.0, result.getValue());
+    }
+
+    // ---------- GENERIC BEHAVIOR ----------
+
+    @Test
+    void testCrossCategoryEquality_ShouldBeFalse() {
+        var length = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
+        var weight = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.WeightUnit.KILOGRAM);
+
+        assertFalse(length.equals(weight));
     }
 
     @Test
-    void testArithmeticEnum_DIVIDE() {
-        double result = QuantityMeasurementApp.ArithmeticOperation.DIVIDE.compute(10, 5);
-        assertEquals(2.0, result, EPS);
+    void testNullUnit_ShouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new QuantityMeasurementApp.Quantity<>(1.0, null));
     }
 
     @Test
-    void testArithmeticEnum_DivideByZero() {
-        assertThrows(ArithmeticException.class,
-                () -> QuantityMeasurementApp.ArithmeticOperation.DIVIDE.compute(10, 0));
-    }
-
-    // ---------- ROUNDING ----------
-
-    @Test
-    void testRounding_AddSubtract() {
-        var a = new QuantityMeasurementApp.Quantity<>(1.234, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(0.001, QuantityMeasurementApp.LengthUnit.FEET);
-
-        var r = a.add(b);
-        assertEquals(1.24, r.getValue(), EPS);
+    void testInvalidValue_ShouldThrowException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new QuantityMeasurementApp.Quantity<>(Double.NaN, QuantityMeasurementApp.LengthUnit.FEET));
     }
 
     @Test
-    void testDivide_NoRounding() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(3.0, QuantityMeasurementApp.LengthUnit.FEET);
+    void testAdd_Null_ShouldThrowException() {
+        var q = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
 
-        assertEquals(10.0 / 3.0, a.divide(b), EPS);
+        assertThrows(IllegalArgumentException.class, () -> q.add(null));
     }
 
-    // ---------- IMMUTABILITY ----------
-
     @Test
-    void testImmutability_AfterOperations() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
-        var b = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.LengthUnit.FEET);
+    void testConvert_Null_ShouldThrowException() {
+        var q = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
 
-        a.add(b);
-        a.subtract(b);
-        a.divide(b);
-
-        assertEquals(10.0, a.getValue(), EPS);
+        assertThrows(IllegalArgumentException.class, () -> q.convertTo(null));
     }
 
-    // ---------- CHAIN OPERATIONS ----------
-
     @Test
-    void testChainedOperations() {
-        var a = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET);
+    void testSameReferenceEquality() {
+        var q = new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET);
 
-        var result = a.add(new QuantityMeasurementApp.Quantity<>(2.0, QuantityMeasurementApp.LengthUnit.FEET))
-                .subtract(new QuantityMeasurementApp.Quantity<>(1.0, QuantityMeasurementApp.LengthUnit.FEET));
-
-        assertEquals(11.0, result.getValue(), EPS);
-    }
-
-    // ---------- MULTI CATEGORY ----------
-
-    @Test
-    void testAllCategories_Working() {
-
-        var length = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.LengthUnit.FEET)
-                .subtract(new QuantityMeasurementApp.Quantity<>(6.0, QuantityMeasurementApp.LengthUnit.INCHES));
-        assertEquals(9.5, length.getValue(), EPS);
-
-        var weight = new QuantityMeasurementApp.Quantity<>(10.0, QuantityMeasurementApp.WeightUnit.KILOGRAM)
-                .add(new QuantityMeasurementApp.Quantity<>(1000.0, QuantityMeasurementApp.WeightUnit.GRAM));
-        assertEquals(11.0, weight.getValue(), EPS);
-
-        var volume = new QuantityMeasurementApp.Quantity<>(5.0, QuantityMeasurementApp.VolumeUnit.LITRE)
-                .subtract(new QuantityMeasurementApp.Quantity<>(500.0, QuantityMeasurementApp.VolumeUnit.MILLILITRE));
-        assertEquals(4.5, volume.getValue(), EPS);
+        assertTrue(q.equals(q));
     }
 }
